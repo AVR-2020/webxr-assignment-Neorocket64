@@ -1,0 +1,29 @@
+{
+  "name": "webxr-neo64",
+  "version": "0.0.1",
+  "description": "yes",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "budo --live --ssl --cert=securitiny/server.crt --key=securitiny/server.key --cors --verbose --port 3000 --open"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AVR-2020/webxr-assignment-Neorocket64.git"
+  },
+  "author": "neorocket64",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/AVR-2020/webxr-assignment-Neorocket64/issues"
+  },
+  "homepage": "https://github.com/AVR-2020/webxr-assignment-Neorocket64#readme",
+  "dependencies": {
+    "budo": "^11.6.4",
+    "express": "^4.17.1"
+  },
+  "keywords": [
+    "aframe",
+    "webvr",
+    "vr"
+  ]
+}

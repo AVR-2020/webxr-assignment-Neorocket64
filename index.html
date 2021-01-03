@@ -30,14 +30,23 @@
     </script>
 
     <script>
-      var items = Math.floor(Math.random() * 3) + 1
-      // var items = 3
+      const RandomItemLocation = [
+          "5 2 2",
+          "-4 2 -2",
+          "-5 2 -3",
+          "7 2 -3",
+          "6 2 -1",
+          "2 2 -3"
+        ]
+      var items = Math.floor(Math.random() * (RandomItemLocation.length-2)) + 3
       AFRAME.registerComponent('click-once', {
         init: function () {
           var self = this;
           var scene = self.el.sceneEl;
           var raycaster = scene.querySelector('[cursor]').components.raycaster;
             scene.querySelector('[cursor]').components.raycaster;
+
+          indicate_item = document.querySelector('#itemleft')
       
         // Define function to be executed on click.
         var clickHandler = function (e) {
@@ -49,6 +58,7 @@
           // Remove `data-clickable` attribute.
           // self.el.removeAttribute('data-clickable')
           self.el.parentNode.removeChild(self.el)
+          indicate_item.el.setAttribute('value', 'Disks Left - ' + items)
           
           // Remove event listener since no longer needed.
           // self.el.removeEventListener('click', clickHandler)
@@ -60,17 +70,14 @@
       }
       
       })
-
-      
-
-      var createFloppy = function(x, y, z) {
+      var createFloppy = function(location) {
         var floppy_object = document.createElement("a-entity")
         
         floppy_object.setAttribute("click-once", "")
         floppy_object.setAttribute("floppy", "")
         floppy_object.setAttribute("gltf-model", "#floppy")
         floppy_object.setAttribute("dynamic-body", "")
-        floppy_object.setAttribute("position", `${x} ${y} ${z}`)
+        floppy_object.setAttribute("position", `${location}`)
         floppy_object.setAttribute("scale", "0.1 0.1 0.1")
 
         SceneEl = document.querySelector('a-scene')
@@ -78,9 +85,23 @@
       }
 
       var manageFloppy = function() {
-        createFloppy(5, 2, 2)
-        createFloppy(-4, 2, -2)
-        createFloppy(7, 2, -3)
+        var listPicked = []
+        var i, index
+        console.log(items)
+
+        for(i = 0; i < items; i++){
+          index = Math.floor(Math.random() * (RandomItemLocation.length-1))
+          // console.log("lenght of array", listPicked.length)
+          while(listPicked.indexOf(index) !== -1){
+            index = Math.floor(Math.random() * (RandomItemLocation.length-1))
+          }
+          // console.log("gooooot something -> ", index)
+          listPicked.push(index)
+        }
+        for(i = 0; i < items; i++){
+          // console.log(RandomItemLocation[listPicked[i]])
+          createFloppy(RandomItemLocation[listPicked[i]])
+        }
       }
 
       window.onload = manageFloppy
@@ -120,14 +141,12 @@
           camera
           position="0 1.8 0"
           look-controls="pointerLockEnabled: true">
+          <a-text id="itemleft" align="center" width="1.1" value="Find and pick floppies!" position="0 -0.1 -1"></a-text>
           <a-entity cursor raycaster="objects: [floppy], [checkpoint]"
             position="0 0 -1"
             geometry="primitive: ring; radiusInner: 0.02; radiusOuter: 0.03;"
             material="color: #CCC; shader: flat;">
           </a-entity>
-        </a-entity>
-        <a-entity look-at="#kamera-lucu" position="0 1.8 0">
-          <a-text value="Hello, World!"  position="0 0.2 -0.5"></a-text>
         </a-entity>
       </a-entity>
 

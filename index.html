@@ -1,14 +1,158 @@
 <html>
   <head>
     <script src="https://aframe.io/releases/1.1.0/aframe.min.js"></script>
+    <script src="https://unpkg.com/aframe-event-set-component@^4.0.0/dist/aframe-event-set-component.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/n5ro/aframe-physics-system@v4.0.1/dist/aframe-physics-system.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras@v6.1.1/dist/aframe-extras.min.js"></script>
+    <script src="https://unpkg.com/aframe-physics-extras/dist/aframe-physics-extras.min.js"></script>
+    <script src="https://unpkg.com/super-hands@^3.0.1/dist/super-hands.min.js"></script>
+    <script>
+      AFRAME.registerComponent("physync", {
+        init: function () {
+        console.clear()
+        let v = new THREE.Vector3();
+        v.y = 0.2;
+        this.el.setAttribute("vel", "0 v.y 0");
+    
+      },
+      tick: function() {
+
+       var thisBody = this.el.body;       
+       let rot = this.el.getAttribute("rotation"); 
+       let vel = this.el.getAttribute("vel"); 
+       //rot += vel;  //this doesn't work
+       rot.y += 5.2;  //this works only on box2, NOT box1 
+       this.el.setAttribute("rotation", rot);
+          this.el.components['static-body'].syncToPhysics();
+        }
+      });
+    </script>
+    <script>
+      createFloppy: function(x, y, z) {
+        var floppy_object = document.createElement(a-entity)
+
+        floppy_object.setAttribute(gltf-model, "#floppy")
+        floppy_object.setAttribute(dynamic-body, "")
+        floppy_object.setAttribute(position, `${x} ${y} ${z}`)
+        floppy_object.setAttribute(scale, "0.1 0.1 0.1")
+      }
+    </script>
   </head>
   <body>
-    <a-scene>
-      <a-box position="-1 0.5 -3" rotation="0 45 0" color="#4CC3D9"></a-box>
-      <a-sphere position="0 1.25 -5" radius="1.25" color="#EF2D5E"></a-sphere>
-      <a-cylinder position="1 0.75 -3" radius="0.5" height="1.5" color="#FFC65D"></a-cylinder>
-      <a-plane position="0 0 -4" rotation="-90 0 0" width="4" height="4" color="#7BC8A4"></a-plane>
+    <a-scene physics="debug: true" avatar-recorder
+      touch-to-click-converter>
+      <a-assets>
+        <img id="ground" src="./model/floor.jpg">
+        <a-asset-item id="bed" src="./model/bed/scene.gltf"></a-asset-item>
+        <a-asset-item id="floppy" src="./model/floppy/scene.gltf"></a-asset-item>
+        <a-asset-item id="desk" src="./model/desk/scene.gltf"></a-asset-item>
+        <a-asset-item id="cupboard" src="./model/cupboard/scene.gltf"></a-asset-item>
+        <a-asset-item id="chair" src="./model/chair/scene.gltf"></a-asset-item>
+        <a-asset-item id="drawer" src="./model/drawer/scene.gltf"></a-asset-item>
+        <a-asset-item id="lamp" src="./model/lamp/scene.gltf"></a-asset-item>
+        <!-- <a-asset-item id="x" src="./model/x/scene.gltf"></a-asset-item> -->
+      </a-assets>
+
+      <!-- <a-entity>
+        <a-camera></a-camera>
+        <a-entity sphere-collider="objects: a-box" super-hands hand-controls="hand: left"></a-entity>
+        <a-entity sphere-collider="objects: a-box" super-hands hand-controls="hand: right"></a-entity>
+      </a-entity> -->
+      <a-entity camera wasd-controls position="0 2 1"
+                progressive-controls="objects: .cube"
+                capture-mouse
+                raycaster="objects: .cube" cursor="rayOrigin:mouse" 
+                static-body="shape: sphere; sphereRadius: 0.001"
+                super-hands="colliderEvent: raycaster-intersection;
+                             colliderEventProperty: els;
+                             colliderEndEvent:raycaster-intersection-cleared;
+                             colliderEndEventProperty: clearedEls;">
+      </a-entity>
+
+      <a-camera>
+        <a-cursor></a-cursor>
+     </a-camera>
+
+      <!-- <a-entity 
+        progressive-controls="objects: .moveable, #moveable_player"
+        position="0 1.6 0">
+      </a-entity> -->
+
+      <a-mixin id="cube" geometry="primitive: box; width: 0.5; height: 0.5; depth: 0.5"
+                 hoverable grabbable stretchable draggable droppable
+                 shadow
+                 event-set__hoveron="_event: hover-start; material.opacity: 0.7; transparent: true"
+                 event-set__hoveroff="_event: hover-end; material.opacity: 1; transparent: false"
+                 event-set__dragon="_event: dragover-start; material.wireframe: true"
+                 event-set__dragoff="_event: dragover-end; material.wireframe: false">
+      </a-mixin>
+      <a-mixin id="object_drag" geometry="primitive: box; width: 0.75; height: 0.75; depth: 0.75"
+        dynamic-body
+        hoverable grabbable draggable droppable
+        shadow
+        event-set__hoveron="_event: hover-start; material.opacity: 0.7; transparent: true"
+        event-set__hoveroff="_event: hover-end; material.opacity: 1; transparent: false"
+        event-set__dragon="_event: dragover-start; material.wireframe: true"
+        event-set__dragoff="_event: dragover-end; material.wireframe: false">
+      </a-mixin>
+
+      <!-- <a-box dynamic-body hoverable grabbable stretchable draggable dropppable color="blue" position="0 2 -1"></a-box> -->
+      <a-entity class="cube" mixin="cube" position="0 1 -1.25" material="color: red"></a-entity>
+
+      <!-- room -->
+      <a-plane static-body src="#ground" position="0 0 0" rotation="-90 0 0" width="20" height="10"></a-plane>
+      <a-plane static-body position="0 5 -5" rotation="0 0 0" width="20" height="10" color="#7BC8A4"></a-plane>
+      <a-plane static-body position="0 5 5" rotation="0 180 0" width="20" height="10" color="#7BC8A4"></a-plane>
+      <a-plane static-body position="-10 5 0" rotation="0 90 0" width="20" height="10" color="#7BC8A4"></a-plane>
+      <a-plane static-body position="10 5 0" rotation="0 -90 0" width="20" height="10" color="#7BC8A4"></a-plane>
       <a-sky color="#ECECEC"></a-sky>
+      <!-- position="1 1 -1" -->
+      <!-- scale="1 1 1" -->
+      <a-entity static-body gltf-model="#bed" position="5.15 -0.175 -3" scale="0.1 0.1 0.1"></a-entity>
+      <a-entity 
+        static-body gltf-model="#desk" 
+        position="-7.25 0.514 -4.8" 
+        scale="1.9 1.9 1.9">
+      </a-entity>
+      <a-entity 
+        static-body gltf-model="#drawer" 
+        position="6.9 0.68 3.57"
+        scale="0.3 0.3 0.3">
+      </a-entity>
+      <a-entity 
+        static-body gltf-model="#cupboard" 
+        position="-9.17 0.925 3.37" 
+        scale="0.01 0.01 0.01">
+      </a-entity>
+      <a-entity 
+      dynamic-body gltf-model="#chair"
+      rotation="0 -90 0"
+      position="-4.15 0 -1.5" 
+      scale="0.025 0.025 0.025">
+      </a-entity>
+      <a-entity 
+      shape="hull"
+      dynamic-body gltf-model="#lamp"
+      position="-8.5 5 -2.76" 
+      scale="0.025 0.025 0.025">
+      </a-entity>
+
+
+      <!-- floppies -->
+      <a-entity 
+        gltf-model="#floppy"
+        dynamic-body
+        id="floppy"
+        class="cube"
+        position="0 2 0" scale="0.1 0.1 0.1">
+      </a-entity>
+
     </a-scene>
   </body>
 </html>
+<!-- "Bed" by andree is licensed under Creative Commons Attribution. https://skfb.ly/6xO7J To view a copy of this license, visit http://creativecommons.org/licenses/by/4.0/. -->
+<!-- "Floppy disk" by drumdorf is licensed under Creative Commons Attribution-ShareAlike. https://skfb.ly/DXpD To view a copy of this license, visit http://creativecommons.org/licenses/by-sa/4.0/. -->
+<!-- "Desk" by neverfollow81 is licensed under Creative Commons Attribution. https://skfb.ly/JHqC To view a copy of this license, visit http://creativecommons.org/licenses/by/4.0/. -->
+<!-- "Old low-poly Cupboard" by Ricardo Sanchez is licensed under Creative Commons Attribution. https://skfb.ly/6RxK8 To view a copy of this license, visit http://creativecommons.org/licenses/by/4.0/. -->
+<!-- "Chair" by vegu is licensed under Creative Commons Attribution-NonCommercial. https://skfb.ly/68rUU To view a copy of this license, visit http://creativecommons.org/licenses/by-nc/4.0/. -->
+<!-- https://www.deviantart.com/fabooguy/art/Dark-Wooden-Floor-Texture-Tileable-2048x2048-421888149 -->

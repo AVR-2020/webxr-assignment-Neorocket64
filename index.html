@@ -43,10 +43,10 @@
         init: function () {
           var self = this;
           var scene = self.el.sceneEl;
-          var raycaster = scene.querySelector('[cursor]').components.raycaster;
-            scene.querySelector('[cursor]').components.raycaster;
+          var raycaster = scene.querySelector('[cursor]').components.raycaster
+            scene.querySelector('[cursor]').components.raycaster
 
-          indicate_item = document.querySelector('#itemleft')
+          var indicate_item = document.querySelector('#itemleft')
       
         // Define function to be executed on click.
         var clickHandler = function (e) {
@@ -58,7 +58,7 @@
           // Remove `data-clickable` attribute.
           // self.el.removeAttribute('data-clickable')
           self.el.parentNode.removeChild(self.el)
-          indicate_item.el.setAttribute('value', 'Disks Left - ' + items)
+          indicate_item.setAttribute('value', 'Disks Left - ' + items)
           
           // Remove event listener since no longer needed.
           // self.el.removeEventListener('click', clickHandler)
@@ -170,27 +170,6 @@
         position="0 1.6 0">
       </a-entity> -->
 
-      <a-mixin id="cube" geometry="primitive: box; width: 0.5; height: 0.5; depth: 0.5"
-                 hoverable grabbable stretchable draggable droppable
-                 shadow
-                 event-set__hoveron="_event: hover-start; material.opacity: 0.7; transparent: true"
-                 event-set__hoveroff="_event: hover-end; material.opacity: 1; transparent: false"
-                 event-set__dragon="_event: dragover-start; material.wireframe: true"
-                 event-set__dragoff="_event: dragover-end; material.wireframe: false">
-      </a-mixin>
-      <a-mixin id="object_drag" geometry="primitive: box; width: 0.75; height: 0.75; depth: 0.75"
-        dynamic-body
-        hoverable grabbable draggable droppable
-        shadow
-        event-set__hoveron="_event: hover-start; material.opacity: 0.7; transparent: true"
-        event-set__hoveroff="_event: hover-end; material.opacity: 1; transparent: false"
-        event-set__dragon="_event: dragover-start; material.wireframe: true"
-        event-set__dragoff="_event: dragover-end; material.wireframe: false">
-      </a-mixin>
-
-      <!-- <a-box dynamic-body hoverable grabbable stretchable draggable dropppable color="blue" position="0 2 -1"></a-box> -->
-      <a-entity class="cube" mixin="cube" position="0 1 -1.25" material="color: red"></a-entity>
-
       <!-- room -->
       <a-light type="ambient" color="#fff"></a-light>
       <a-plane static-body src="#ground" position="0 0 0" rotation="-90 0 0" width="20" height="10"></a-plane>
@@ -224,7 +203,7 @@
       scale="0.025 0.025 0.025">
       </a-entity>
       <a-entity 
-      dynamic-body="shape: hull" gltf-model="#lamp"
+      dynamic-body gltf-model="#lamp"
       position="-8.5 5 -2.76" 
       scale="0.025 0.025 0.025">
       </a-entity>

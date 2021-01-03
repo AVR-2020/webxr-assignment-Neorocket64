@@ -6,6 +6,7 @@
     <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras@v6.1.1/dist/aframe-extras.min.js"></script>
     <script src="https://unpkg.com/aframe-physics-extras/dist/aframe-physics-extras.min.js"></script>
     <script src="https://unpkg.com/super-hands@^3.0.1/dist/super-hands.min.js"></script>
+    <script src="https://unpkg.com/aframe-look-at-component@0.8.0/dist/aframe-look-at-component.min.js"></script>
     <script>
       AFRAME.registerComponent("physync", {
         init: function () {
@@ -27,20 +28,68 @@
         }
       });
     </script>
-    <script>
-      createFloppy: function(x, y, z) {
-        var floppy_object = document.createElement(a-entity)
 
-        floppy_object.setAttribute(gltf-model, "#floppy")
-        floppy_object.setAttribute(dynamic-body, "")
-        floppy_object.setAttribute(position, `${x} ${y} ${z}`)
-        floppy_object.setAttribute(scale, "0.1 0.1 0.1")
+    <script>
+      var items = Math.floor(Math.random() * 3) + 1
+      // var items = 3
+      AFRAME.registerComponent('click-once', {
+        init: function () {
+          var self = this;
+          var scene = self.el.sceneEl;
+          var raycaster = scene.querySelector('[cursor]').components.raycaster;
+            scene.querySelector('[cursor]').components.raycaster;
+      
+        // Define function to be executed on click.
+        var clickHandler = function (e) {
+          
+          // Log clicks.
+          items = items - 1
+          console.log('items remaining: ', items)
+        
+          // Remove `data-clickable` attribute.
+          // self.el.removeAttribute('data-clickable')
+          self.el.parentNode.removeChild(self.el)
+          
+          // Remove event listener since no longer needed.
+          // self.el.removeEventListener('click', clickHandler)
+          
+        }
+        
+        // Add event listener for click.
+        self.el.addEventListener('click', clickHandler)
       }
+      
+      })
+
+      
+
+      var createFloppy = function(x, y, z) {
+        var floppy_object = document.createElement("a-entity")
+        
+        floppy_object.setAttribute("click-once", "")
+        floppy_object.setAttribute("floppy", "")
+        floppy_object.setAttribute("gltf-model", "#floppy")
+        floppy_object.setAttribute("dynamic-body", "")
+        floppy_object.setAttribute("position", `${x} ${y} ${z}`)
+        floppy_object.setAttribute("scale", "0.1 0.1 0.1")
+
+        SceneEl = document.querySelector('a-scene')
+        SceneEl.appendChild(floppy_object)
+      }
+
+      var manageFloppy = function() {
+        createFloppy(5, 2, 2)
+        createFloppy(-4, 2, -2)
+        createFloppy(7, 2, -3)
+      }
+
+      window.onload = manageFloppy
     </script>
+
   </head>
   <body>
-    <a-scene physics="debug: true" avatar-recorder
-      touch-to-click-converter>
+    
+    <a-scene physics="debug: true">
       <a-assets>
         <img id="ground" src="./model/floor.jpg">
         <a-asset-item id="bed" src="./model/bed/scene.gltf"></a-asset-item>
@@ -58,7 +107,31 @@
         <a-entity sphere-collider="objects: a-box" super-hands hand-controls="hand: left"></a-entity>
         <a-entity sphere-collider="objects: a-box" super-hands hand-controls="hand: right"></a-entity>
       </a-entity> -->
-      <a-entity camera wasd-controls position="0 2 1"
+
+      <a-assets>
+        <a-mixin id="checkpoint"></a-mixin>
+        <a-mixin id="checkpoint-hovered" color="#6CEEB5"></a-mixin>
+      </a-assets>
+
+      <!-- Player -->
+      <a-entity id="rig" movement-controls="controls: checkpoint" checkpoint-controls="mode: animate">
+        <a-entity 
+          id="kamera-lucu"
+          camera
+          position="0 1.8 0"
+          look-controls="pointerLockEnabled: true">
+          <a-entity cursor raycaster="objects: [floppy], [checkpoint]"
+            position="0 0 -1"
+            geometry="primitive: ring; radiusInner: 0.02; radiusOuter: 0.03;"
+            material="color: #CCC; shader: flat;">
+          </a-entity>
+        </a-entity>
+        <a-entity look-at="#kamera-lucu" position="0 1.8 0">
+          <a-text value="Hello, World!"  position="0 0.2 -0.5"></a-text>
+        </a-entity>
+      </a-entity>
+
+      <!-- <a-entity camera wasd-controls position="0 2 1"
                 progressive-controls="objects: .cube"
                 capture-mouse
                 raycaster="objects: .cube" cursor="rayOrigin:mouse" 
@@ -71,7 +144,7 @@
 
       <a-camera>
         <a-cursor></a-cursor>
-     </a-camera>
+     </a-camera> -->
 
       <!-- <a-entity 
         progressive-controls="objects: .moveable, #moveable_player"
@@ -100,6 +173,7 @@
       <a-entity class="cube" mixin="cube" position="0 1 -1.25" material="color: red"></a-entity>
 
       <!-- room -->
+      <a-light type="ambient" color="#fff"></a-light>
       <a-plane static-body src="#ground" position="0 0 0" rotation="-90 0 0" width="20" height="10"></a-plane>
       <a-plane static-body position="0 5 -5" rotation="0 0 0" width="20" height="10" color="#7BC8A4"></a-plane>
       <a-plane static-body position="0 5 5" rotation="0 180 0" width="20" height="10" color="#7BC8A4"></a-plane>
@@ -131,20 +205,16 @@
       scale="0.025 0.025 0.025">
       </a-entity>
       <a-entity 
-      shape="hull"
-      dynamic-body gltf-model="#lamp"
+      dynamic-body="shape: hull" gltf-model="#lamp"
       position="-8.5 5 -2.76" 
       scale="0.025 0.025 0.025">
       </a-entity>
 
-
-      <!-- floppies -->
-      <a-entity 
-        gltf-model="#floppy"
-        dynamic-body
-        id="floppy"
-        class="cube"
-        position="0 2 0" scale="0.1 0.1 0.1">
+      <!-- Checkpoints -->
+      <a-entity position="1 0 1">
+        <a-cylinder checkpoint radius="0.5" height="0.1" position="-7.59 0 -2" color="#39BB82"></a-cylinder>
+        <a-cylinder checkpoint radius="0.5" height="0.1" position="5.6 0 -1.925" color="#39BB82"></a-cylinder>
+        <a-cylinder checkpoint radius="0.5" height="0.1" position="0 0 0" color="#39BB82"></a-cylinder>
       </a-entity>
 
     </a-scene>

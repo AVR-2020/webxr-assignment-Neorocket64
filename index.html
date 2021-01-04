@@ -7,27 +7,6 @@
     <script src="https://unpkg.com/aframe-physics-extras/dist/aframe-physics-extras.min.js"></script>
     <script src="https://unpkg.com/super-hands@^3.0.1/dist/super-hands.min.js"></script>
     <script src="https://unpkg.com/aframe-look-at-component@0.8.0/dist/aframe-look-at-component.min.js"></script>
-    <script>
-      AFRAME.registerComponent("physync", {
-        init: function () {
-        console.clear()
-        let v = new THREE.Vector3();
-        v.y = 0.2;
-        this.el.setAttribute("vel", "0 v.y 0");
-    
-      },
-      tick: function() {
-
-       var thisBody = this.el.body;       
-       let rot = this.el.getAttribute("rotation"); 
-       let vel = this.el.getAttribute("vel"); 
-       //rot += vel;  //this doesn't work
-       rot.y += 5.2;  //this works only on box2, NOT box1 
-       this.el.setAttribute("rotation", rot);
-          this.el.components['static-body'].syncToPhysics();
-        }
-      });
-    </script>
 
     <script>
       const RandomItemLocation = [
@@ -55,13 +34,8 @@
           items = items - 1
           console.log('items remaining: ', items)
         
-          // Remove `data-clickable` attribute.
-          // self.el.removeAttribute('data-clickable')
           self.el.parentNode.removeChild(self.el)
           indicate_item.setAttribute('value', 'Disks Left - ' + items)
-          
-          // Remove event listener since no longer needed.
-          // self.el.removeEventListener('click', clickHandler)
           
         }
         
